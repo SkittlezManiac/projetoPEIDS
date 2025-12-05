@@ -1,0 +1,23 @@
+[
+	{
+		"id": 1,
+		"nome": "Inception",
+		"ano": 2010,
+		"genero": "Sci-Fi",
+		"imagem": "https://via.placeholder.com/300x450?text=Inception"
+	},
+	{
+		"id": 2,
+		"nome": "Interstellar",
+		"ano": 2014,
+		"genero": "Drama / Sci-Fi",
+		"imagem": "https://via.placeholder.com/300x450?text=Interstellar"
+	},
+	{
+		"id": 3,
+		"nome": "The Matrix",
+		"ano": 1999,
+		"genero": "Ação / Sci-Fi",
+		"imagem": "https://via.placeholder.com/300x450?text=Matrix"
+	}
+]
