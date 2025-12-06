@@ -1,6 +1,6 @@
 async function carregarFilmesTMDB() {
 	try {
-		const resposta = await fetch('/api/tmdb/populares');
+		const resposta = await fetch('/tmdb/populares');
 		const filmes = await resposta.json();
 
 		const container = document.getElementById('listaFilmes');

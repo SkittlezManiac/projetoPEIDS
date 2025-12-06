@@ -5,15 +5,17 @@ body {
 	color: white;
 }
 
-/* HEADER */
 header {
 	background-color: #050914;
 	padding: 20px 30px;
 	border-bottom: 1px solid #1f2937;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
 }
 
 header h1 {
-	margin: 0 0 10px 0;
+	margin: 0;
 }
 
 nav a {
@@ -27,7 +29,6 @@ nav a:hover {
 	color: #3b82f6;
 }
 
-/* HERO SECTION */
 .hero {
 	height: 350px;
 	background-image: url("https://images.unsplash.com/photo-1489599849927-2ee91cede3ba");
@@ -56,17 +57,18 @@ nav a:hover {
 	color: white;
 	border-radius: 5px;
 	cursor: pointer;
+	transition: 0.2s;
 }
 
 .hero-content button:hover {
 	background: #1e40af;
+	transform: scale(1.05);
 }
 
 .info {
 	color: #d1d5db;
 }
 
-/* TRENDING SECTION */
 .section {
 	padding: 40px 30px;
 }
@@ -81,13 +83,13 @@ nav a:hover {
 	gap: 25px;
 }
 
-/* MOVIE CARD */
 .movie-card {
 	background: #111827;
 	border-radius: 10px;
 	overflow: hidden;
 	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 	transition: transform 0.2s ease;
+	cursor: pointer;
 }
 
 .movie-card:hover {
@@ -115,11 +117,81 @@ nav a:hover {
 	color: #9ca3af;
 }
 
-/* FOOTER */
 footer {
 	text-align: center;
 	padding: 20px;
 	background: #050914;
 	border-top: 1px solid #1f2937;
 	font-size: 14px;
+}
+
+.modal {
+	display: none;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.6);
+	justify-content: center;
+	align-items: center;
+	z-index: 999;
+}
+
+.modal-content {
+	background: #1f1f1f;
+	color: white;
+	width: 340px;
+	padding: 25px;
+	border-radius: 10px;
+	box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+	animation: fadeIn 0.25s ease-in-out;
+}
+
+.modal-content input {
+	width: 100%;
+	margin: 8px 0;
+	padding: 10px;
+	border-radius: 6px;
+	border: none;
+	font-size: 14px;
+}
+
+.modal-content button {
+	width: 100%;
+	padding: 10px;
+	background: #007bff;
+	color: white;
+	border: none;
+	border-radius: 6px;
+	margin-top: 10px;
+	font-size: 16px;
+	cursor: pointer;
+}
+
+.modal-content button:hover {
+	background: #0263cf;
+}
+
+.close {
+	float: right;
+	cursor: pointer;
+	font-size: 18px;
+}
+
+.link {
+	color: #00aaff;
+	cursor: pointer;
+}
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+		transform: scale(0.9);
+	}
+
+	to {
+		opacity: 1;
+		transform: scale(1);
+	}
 }
