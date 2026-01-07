@@ -18,13 +18,6 @@ router.post("/register", async (req, res) => {
 		//Hash da senha
 		const hashed = await bcrypt.hash(password, 10);
 
-		//Teste de inserção
-		const query = `INSERT INTO users (name, email, password) VALUES (?, ?, ?)`;
-		db.query(query, ["Test User", "test@example.com", hashed], (err) => {
-			if (err) console.log("Erro no insert:", err);
-			else console.log("Usuário inserido com sucesso!");
-		});
-
 		//Inserção real do usuário vindo do frontend
 		const queryReal = `INSERT INTO users (name, email, password) VALUES (?, ?, ?)`;
 		db.query(queryReal, [name, email, hashed], (err) => {
