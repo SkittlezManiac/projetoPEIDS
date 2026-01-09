@@ -148,24 +148,19 @@ footer {
 	animation: fadeIn 0.25s ease-in-out;
 }
 
-.modal-content input {
+.modal-content input,
+.modal-content button {
 	width: 100%;
-	margin: 8px 0;
 	padding: 10px;
+	margin-top: 8px;
 	border-radius: 6px;
 	border: none;
 	font-size: 14px;
 }
 
 .modal-content button {
-	width: 100%;
-	padding: 10px;
 	background: #007bff;
 	color: white;
-	border: none;
-	border-radius: 6px;
-	margin-top: 10px;
-	font-size: 16px;
 	cursor: pointer;
 }
 
@@ -194,4 +189,32 @@ footer {
 		opacity: 1;
 		transform: scale(1);
 	}
+}
+
+/* FILMES PAGE */
+.filmes-page {
+	padding: 20px;
+}
+
+.search-bar {
+	position: sticky;
+	top: 0;
+	background: #111;
+	padding: 15px;
+	z-index: 10;
+}
+
+.search-bar input {
+	width: 100%;
+	padding: 12px;
+	font-size: 16px;
+	border-radius: 6px;
+	border: none;
+}
+
+.filmes-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+	gap: 25px;
+	margin-top: 20px;
 }

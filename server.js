@@ -8,6 +8,7 @@ const db = require("./db/connection");
 //Rotas
 const authRoutes = require("./routes/authRoutes");
 const filmesRoutes = require("./routes/filmesRoutes");
+const seriesRoutes = require("./routes/seriesRoutes"); // <- NOVO
 
 //Middleware
 app.use(express.json());
@@ -19,19 +20,19 @@ app.use(express.static(path.join(__dirname, "public")));
 //Montar rotas
 app.use("/auth", authRoutes);
 app.use("/", filmesRoutes);
-
+app.use("/series", seriesRoutes); // <- NOVO
 
 //Iniciar servidor
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
-    console.log(`Servidor ativo em: http://localhost:${PORT}`);
+	console.log(`Servidor ativo em: http://localhost:${PORT}`);
 });
 
 //testar conexão com DB
 db.connect((err) => {
-    if (err) {
-        console.error("Erro ao conectar ao MySQL:", err);
-    } else {
-        console.log("Conectado ao MySQL com sucesso!");
-    }
+	if (err) {
+		console.error("Erro ao conectar ao MySQL:", err);
+	} else {
+		console.log("Conectado ao MySQL com sucesso!");
+	}
 });
