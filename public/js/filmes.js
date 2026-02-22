@@ -1,34 +1,32 @@
 let filmes = [];
 
-// Carregar filmes da API TMDB via Express
+// carregar filmes da tmdb
 async function carregarFilmes() {
 	try {
-		const resposta = await fetch("/tmdb/populares");
+		const resposta = await fetch("/filmes/tmdb/populares");
 		filmes = await resposta.json();
-
 		ordenarEExibir(filmes);
 	} catch (err) {
-		console.error("Erro ao carregar filmes:", err);
+		console.error("erro ao carregar filmes:", err);
 	}
 }
 
-// Ordenar filmes por título
+// ordenar filmes por título
 function ordenarEExibir(lista) {
 	const ordenados = [...lista].sort((a, b) =>
 		a.title.localeCompare(b.title, "pt", { sensitivity: "base" })
 	);
-
 	renderizarFilmes(ordenados);
 }
 
-// Renderizar filmes no HTML usando mesma estrutura que index.html
+// renderizar filmes no html
 function renderizarFilmes(lista) {
 	const container = document.getElementById("filmesContainer");
 	container.innerHTML = "";
 
 	lista.forEach(filme => {
 		const card = document.createElement("div");
-		card.className = "movie-card"; // <- usa .movie-card
+		card.className = "movie-card";
 
 		const posterUrl = filme.poster_path
 			? `https://image.tmdb.org/t/p/w300${filme.poster_path}`
@@ -38,15 +36,20 @@ function renderizarFilmes(lista) {
 			<img src="${posterUrl}" alt="${filme.title}">
 			<div class="movie-info">
 				<h4>${filme.title}</h4>
-				<p>${filme.release_date ? filme.release_date.slice(0, 4) : "N/A"}</p>
+				<p>${filme.release_date ? filme.release_date.slice(0, 4) : "n/a"}</p>
 			</div>
 		`;
+
+		// clique para detalhes do filme
+		card.addEventListener("click", () => {
+			window.location.href = `detalhes.html?id=${filme.id}&tipo=filme`;
+		});
 
 		container.appendChild(card);
 	});
 }
 
-// Pesquisa em tempo real
+// pesquisa em tempo real
 document.getElementById("searchInput").addEventListener("input", (e) => {
 	const termo = e.target.value.toLowerCase().trim();
 
@@ -62,5 +65,5 @@ document.getElementById("searchInput").addEventListener("input", (e) => {
 	ordenarEExibir(filtrados);
 });
 
-// Inicializar
-carregarFilmes();
+// inicializar ao carregar a página
+document.addEventListener("DOMContentLoaded", carregarFilmes);

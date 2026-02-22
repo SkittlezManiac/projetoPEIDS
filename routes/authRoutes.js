@@ -4,63 +4,67 @@ const db = require("../db/connection");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
-//Chave para token
+// chave para criar tokens
 const JWT_SECRET = process.env.JWT_SECRET || "segredo123";
 
-//Registar user
+// registar utilizador
 router.post("/register", async (req, res) => {
 	const { name, email, password } = req.body;
 
 	if (!name || !email || !password)
-		return res.status(400).json({ erro: "Preenche todos os campos." });
+		return res.status(400).json({ erro: "preenche todos os campos." });
 
 	try {
-		//Hash da senha
+		// criar hash da password
 		const hashed = await bcrypt.hash(password, 10);
 
-		//Inserção real do usuário vindo do frontend
+		// inserir utilizador na base de dados
 		const queryReal = `INSERT INTO users (name, email, password) VALUES (?, ?, ?)`;
 		db.query(queryReal, [name, email, hashed], (err) => {
 			if (err) {
+				// log de erro e devolver 500
 				console.log(err);
-				return res.status(500).json({ erro: "Email já registado ou erro no servidor." });
+				return res.status(500).json({ erro: "email já registado ou erro no servidor." });
 			}
-			res.json({ mensagem: "Conta criada com sucesso!" });
+			res.json({ mensagem: "conta criada com sucesso!" });
 		});
 
 	} catch (err) {
+		// log de erro e devolver 500
 		console.log(err);
-		res.status(500).json({ erro: "Erro no servidor." });
+		res.status(500).json({ erro: "erro no servidor." });
 	}
 });
 
-//Login
+// login de utilizador
 router.post("/login", (req, res) => {
 	const { email, password } = req.body;
 
 	if (!email || !password)
-		return res.status(400).json({ erro: "Preenche o email e password." });
+		return res.status(400).json({ erro: "preenche o email e password." });
 
 	const query = "SELECT * FROM users WHERE email = ?";
 
 	db.query(query, [email], async (err, results) => {
-		if (err) return res.status(500).json({ erro: "Erro no servidor." });
-		if (results.length === 0) return res.status(400).json({ erro: "Email não encontrado." });
+		if (err) return res.status(500).json({ erro: "erro no servidor." });
+		if (results.length === 0) return res.status(400).json({ erro: "email não encontrado." });
 
 		const user = results[0];
 
+		// comparar password com hash
 		const passMatch = await bcrypt.compare(password, user.password);
-		if (!passMatch) return res.status(400).json({ erro: "Password incorreta." });
+		if (!passMatch) return res.status(400).json({ erro: "password incorreta." });
 
-		// Criar token JWT
+		// criar token jwt
 		const token = jwt.sign(
 			{ id: user.id, name: user.name, email: user.email },
 			JWT_SECRET,
 			{ expiresIn: "3h" }
 		);
 
+		// devolver token e dados do utilizador
 		res.json({
-			mensagem: "Login efetuado com sucesso!",
+			mensagem: "login efetuado com sucesso!",
 			token,
 			user: {
 				id: user.id,

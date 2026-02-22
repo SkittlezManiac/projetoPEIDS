@@ -1,23 +1,20 @@
-// Mostrar / fechar modal
+// elementos do modal
 const modal = document.getElementById("authModal");
 const btnLogin = document.getElementById("btnLogin");
 const closeModal = document.getElementById("closeModal");
-
 const loginForm = document.getElementById("loginForm");
 const registerForm = document.getElementById("registerForm");
 
+// abrir e fechar modal
 btnLogin.onclick = () => modal.style.display = "flex";
 closeModal.onclick = () => modal.style.display = "none";
+window.onclick = (event) => { if (event.target === modal) modal.style.display = "none"; };
 
-window.onclick = (event) => {
-	if (event.target === modal) modal.style.display = "none";
-};
-
+// alternar entre login e registo
 document.getElementById("showRegister").onclick = () => {
 	loginForm.style.display = "none";
 	registerForm.style.display = "block";
 };
-
 document.getElementById("showLogin").onclick = () => {
 	registerForm.style.display = "none";
 	loginForm.style.display = "block";
@@ -45,7 +42,7 @@ document.getElementById("submitLogin").onclick = async () => {
 	}
 };
 
-// registar
+// registo
 document.getElementById("submitRegister").onclick = async () => {
 	const name = document.getElementById("name").value;
 	const email = document.getElementById("email").value;
@@ -57,8 +54,8 @@ document.getElementById("submitRegister").onclick = async () => {
 		body: JSON.stringify({ name, email, password })
 	});
 
-	const data = await res.json(); -
-		alert(data.mensagem || data.erro);
+	const data = await res.json();
+	alert(data.mensagem || data.erro);
 
 	if (!data.erro) {
 		registerForm.style.display = "none";
@@ -66,7 +63,7 @@ document.getElementById("submitRegister").onclick = async () => {
 	}
 };
 
-// Atualiza o botão de login/logout
+// atualizar botão login/logout
 function atualizarBotaoLogin() {
 	const btnLogin = document.getElementById("btnLogin");
 	const user = localStorage.getItem("user");
@@ -78,7 +75,7 @@ function atualizarBotaoLogin() {
 			localStorage.removeItem("token");
 			localStorage.removeItem("user");
 			atualizarBotaoLogin();
-			alert("Desconectado com sucesso!");
+			alert("desconectado com sucesso!");
 		};
 	} else {
 		btnLogin.textContent = "Login";
@@ -86,4 +83,5 @@ function atualizarBotaoLogin() {
 	}
 }
 
+// inicializar estado do botão
 atualizarBotaoLogin();

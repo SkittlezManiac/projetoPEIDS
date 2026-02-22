@@ -1,37 +1,28 @@
-// favoritos.js
-// Lógica completa para gerir favoritos no front-end
-
 const token = localStorage.getItem('token');
 const listaFavoritos = document.getElementById('listaFavoritos');
 const mensagemFavoritos = document.getElementById('mensagemFavoritos');
 
-// ============================
-// VERIFICA LOGIN
-// ============================
+// verificar login do utilizador
 function verificarLogin() {
 	if (!token) {
 		if (mensagemFavoritos) {
-			mensagemFavoritos.innerText = 'Tens de fazer login para gerir favoritos.';
+			mensagemFavoritos.innerText = 'tens de fazer login para gerir favoritos.';
 		}
 		return false;
 	}
 	return true;
 }
 
-// ============================
-// CARREGAR FAVORITOS
-// ============================
+// carregar favoritos do servidor
 async function carregarFavoritos() {
 	if (!verificarLogin()) return;
 
 	try {
 		const res = await fetch('/api/favoritos', {
-			headers: {
-				'Authorization': 'Bearer ' + token
-			}
+			headers: { 'Authorization': 'Bearer ' + token }
 		});
 
-		if (!res.ok) throw new Error('Erro ao carregar favoritos');
+		if (!res.ok) throw new Error('erro ao carregar favoritos');
 
 		const favoritos = await res.json();
 
@@ -40,7 +31,7 @@ async function carregarFavoritos() {
 		listaFavoritos.innerHTML = '';
 
 		if (favoritos.length === 0) {
-			mensagemFavoritos.innerText = 'Ainda não adicionaste nenhum favorito.';
+			mensagemFavoritos.innerText = 'ainda não adicionaste nenhum favorito.';
 			return;
 		}
 
@@ -55,7 +46,7 @@ async function carregarFavoritos() {
         <h3>${f.titulo}</h3>
         <p>${f.ano || ''}</p>
         <button class="btn-danger" data-id="${f.id}">
-          Remover dos Favoritos
+          remover dos favoritos
         </button>
       `;
 
@@ -69,17 +60,15 @@ async function carregarFavoritos() {
 	} catch (err) {
 		console.error(err);
 		if (mensagemFavoritos) {
-			mensagemFavoritos.innerText = 'Erro ao carregar os favoritos.';
+			mensagemFavoritos.innerText = 'erro ao carregar os favoritos.';
 		}
 	}
 }
 
-// ============================
-// ADICIONAR AOS FAVORITOS
-// ============================
+// adicionar item aos favoritos
 async function adicionarFavorito(filme) {
 	if (!verificarLogin()) {
-		alert('Tens de fazer login para adicionar favoritos.');
+		alert('tens de fazer login para adicionar favoritos.');
 		return;
 	}
 
@@ -93,47 +82,38 @@ async function adicionarFavorito(filme) {
 			body: JSON.stringify(filme)
 		});
 
-		if (!res.ok) throw new Error('Erro ao adicionar favorito');
+		if (!res.ok) throw new Error('erro ao adicionar favorito');
 
-		alert('Adicionado aos favoritos ⭐');
+		alert('adicionado aos favoritos ⭐');
 
 	} catch (err) {
 		console.error(err);
-		alert('Erro ao adicionar aos favoritos.');
+		alert('erro ao adicionar aos favoritos.');
 	}
 }
 
-// ============================
-// REMOVER FAVORITO
-// ============================
+// remover item dos favoritos
 async function removerFavorito(id) {
 	if (!verificarLogin()) return;
-
-	if (!confirm('Queres remover este item dos favoritos?')) return;
+	if (!confirm('queres remover este item dos favoritos?')) return;
 
 	try {
 		const res = await fetch('/api/favoritos/' + id, {
 			method: 'DELETE',
-			headers: {
-				'Authorization': 'Bearer ' + token
-			}
+			headers: { 'Authorization': 'Bearer ' + token }
 		});
 
-		if (!res.ok) throw new Error('Erro ao remover favorito');
+		if (!res.ok) throw new Error('erro ao remover favorito');
 
-		// Atualizar lista
 		carregarFavoritos();
 
 	} catch (err) {
 		console.error(err);
-		alert('Erro ao remover dos favoritos.');
+		alert('erro ao remover dos favoritos.');
 	}
 }
 
-// ============================
-// FUNÇÃO AUXILIAR
-// PARA BOTÕES "FAVORITO"
-// ============================
+// configurar botões de adicionar favorito
 function configurarBotoesFavoritos() {
 	const botoes = document.querySelectorAll('.btn-favorito');
 
@@ -143,17 +123,14 @@ function configurarBotoesFavoritos() {
 				titulo: btn.dataset.titulo,
 				ano: btn.dataset.ano,
 				poster: btn.dataset.poster,
-				tipo: btn.dataset.tipo // filme | serie
+				tipo: btn.dataset.tipo
 			};
-
 			adicionarFavorito(filme);
 		});
 	});
 }
 
-// ============================
-// AUTO INIT
-// ============================
+// inicializar ao carregar a página
 document.addEventListener('DOMContentLoaded', () => {
 	if (listaFavoritos) {
 		carregarFavoritos();

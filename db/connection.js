@@ -1,5 +1,6 @@
 const mysql = require('mysql2');
 
+// criar ligação à base de dados
 const db = mysql.createConnection({
 	host: 'localhost',
 	user: 'root',
@@ -7,12 +8,13 @@ const db = mysql.createConnection({
 	database: 'gestao_filmes'
 });
 
+// testar ligação
 db.connect((err) => {
 	if (err) {
-		console.error(" Erro ao ligar à base de dados:", err);
+		console.error("erro ao ligar à base de dados:", err);
 		return;
 	}
-	console.log(" Ligação MySQL estabelecida.");
+	console.log("ligação mysql estabelecida.");
 });
 
 module.exports = db;
