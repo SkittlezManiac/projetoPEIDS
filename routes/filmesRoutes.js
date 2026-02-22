@@ -38,32 +38,59 @@ router.get("/tmdb/populares", async (req, res) => {
 });
 
 // importar filmes populares para o mysql
+// importar filmes populares para o mysql
 router.post("/importar/tmdb", async (req, res) => {
 	try {
 		const filmes = await getPopularMovies();
 
-		// criar promessas para inserir cada filme
-		const promises = filmes.map(f => new Promise((resolve, reject) => {
-			const query = `
-                INSERT IGNORE INTO filmes (titulo, sinopse, poster, ano, tmdb_id)
-                VALUES (?, ?, ?, ?, ?)
-            `;
+		for (const f of filmes) {
+			// Normalizar o ano: se não houver release_date, usa NULL
+			const ano = f.release_date?.slice(0, 4) || null;
 
-			db.query(query, [
-				f.title,
-				f.overview,
-				f.poster_path ? `https://image.tmdb.org/t/p/w500${f.poster_path}` : null,
-				f.release_date?.slice(0, 4),
-				f.id
-			], err => err ? reject(err) : resolve());
-		}));
+			// Inserir filme se ainda não existir
+			const filmeQuery = `
+				INSERT INTO filmes (titulo, sinopse, poster, ano, tmdb_id)
+				SELECT ?, ?, ?, ?, ?
+				WHERE NOT EXISTS (
+					SELECT 1 FROM filmes WHERE tmdb_id = ?
+				)
+			`;
 
-		// esperar todas as inserções
-		await Promise.all(promises);
-		res.json({ mensagem: "filmes importados com sucesso!" });
+			await new Promise((resolve, reject) => {
+				db.query(filmeQuery, [
+					f.title,
+					f.overview,
+					f.poster_path ? `https://image.tmdb.org/t/p/w500${f.poster_path}` : null,
+					ano,
+					f.id,
+					f.id
+				], err => err ? reject(err) : resolve());
+			});
+
+			// Pegar o ID do filme
+			const filmeId = await new Promise((resolve, reject) => {
+				db.query(`SELECT id FROM filmes WHERE tmdb_id = ?`, [f.id], (err, rows) => {
+					if (err) reject(err);
+					else resolve(rows[0].id);
+				});
+			});
+
+			// Inserir genre_ids na tabela de relação evitando duplicados
+			if (f.genre_ids && f.genre_ids.length > 0) {
+				const promises = f.genre_ids.map(genreId => new Promise((resolve, reject) => {
+					const query = `
+						INSERT IGNORE INTO filme_genero (filme_id, genre_id)
+						VALUES (?, ?)
+					`;
+					db.query(query, [filmeId, genreId], err => err ? reject(err) : resolve());
+				}));
+				await Promise.all(promises);
+			}
+		}
+
+		res.json({ mensagem: "Filmes importados com genre_ids individuais sem duplicados!" });
 
 	} catch (err) {
-		// log de erro e devolver 500
 		console.error("erro ao importar:", err);
 		res.status(500).json({ erro: "erro ao importar filmes da tmdb" });
 	}
