@@ -26,9 +26,7 @@ if (!id || !tipo) {
 async function carregarDetalhes() {
 	try {
 		const res = await fetch(`/${tipo}s/${id}`);
-
 		if (!res.ok) throw new Error('erro ao carregar detalhes');
-
 		const data = await res.json();
 
 		titulo.innerText = data.nome;
@@ -67,7 +65,6 @@ if (btnFavorito) {
 			});
 
 			if (!res.ok) throw new Error('erro ao adicionar favorito');
-
 			alert('adicionado aos favoritos ⭐');
 
 		} catch (err) {
@@ -84,7 +81,6 @@ async function carregarReviews() {
 		if (!res.ok) throw new Error('erro ao carregar reviews');
 
 		const reviews = await res.json();
-
 		listaReviews.innerHTML = '';
 
 		if (reviews.length === 0) {
@@ -97,17 +93,14 @@ async function carregarReviews() {
 			div.className = 'review-card';
 
 			div.innerHTML = `
-	<p><strong>${r.nome_utilizador}</strong> - ${new Date(r.data_review).toLocaleDateString()}</p>
-	<p>classificação: ${r.classificacao} ⭐</p>
-	<p>${r.critica}</p>
-	<button class="btn-like" data-id="${r.id}">
-		👍 útil (${r.votos_utilidade})
-	</button>
-`;
-			div.querySelector('button').addEventListener('click', () => {
-				votarUtilidade(r.id);
-			});
-
+                <p><strong>${r.nome_utilizador}</strong> - ${new Date(r.data_review).toLocaleDateString()}</p>
+                <p>classificação: ${r.classificacao} ⭐</p>
+                <p>${r.critica}</p>
+                <button class="btn-like" data-id="${r.id}">
+                    👍 útil (${r.votos_utilidade})
+                </button>
+            `;
+			div.querySelector('button').addEventListener('click', () => votarUtilidade(r.id));
 			listaReviews.appendChild(div);
 		});
 
@@ -120,63 +113,87 @@ async function carregarReviews() {
 // votar utilidade de review
 async function votarUtilidade(idReview) {
 	try {
-		const res = await fetch(`/reviews/${idReview}/voto`, {
-			method: 'PUT'
-		});
-
+		const res = await fetch(`/reviews/${idReview}/voto`, { method: 'PUT' });
 		if (!res.ok) throw new Error('erro ao votar');
-
 		carregarReviews();
-
 	} catch (err) {
 		console.error(err);
 		alert('erro ao votar utilidade.');
 	}
 }
 
+// enviar review
 if (btnEnviarReview) {
-btnEnviarReview.addEventListener('click', async () => {
-	const texto = document.getElementById('textoReview').value.trim();
-	const classificacao = parseInt(document.getElementById('classificacao').value);
+	btnEnviarReview.addEventListener('click', async () => {
+		const texto = document.getElementById('textoReview').value.trim();
+		const classificacao = parseInt(document.getElementById('classificacao').value);
 
-	if (!texto) {
-		alert('escreve uma crítica.');
-		return;
-	}
+		if (!texto) {
+			alert('escreve uma crítica.');
+			return;
+		}
 
-	if (!token) {
-		alert('tens de fazer login para escrever uma review.');
-		return;
-	}
+		if (!token) {
+			alert('tens de fazer login para escrever uma review.');
+			return;
+		}
 
+		try {
+			const res = await fetch('/reviews', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': 'Bearer ' + token
+				},
+				body: JSON.stringify({
+					conteudo_id: parseInt(id),
+					tipo,
+					classificacao,
+					critica: texto
+				})
+			});
+
+			if (!res.ok) throw new Error('erro ao enviar review');
+
+			document.getElementById('textoReview').value = '';
+			carregarReviews();
+
+		} catch (err) {
+			console.error(err);
+			alert('erro ao enviar review.');
+		}
+	});
+}
+
+// carregar trailer
+async function carregarTrailer() {
+	const container = document.getElementById('trailerContainer');
 	try {
-		const res = await fetch('/reviews', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				'Authorization': 'Bearer ' + token
-			},
-			body: JSON.stringify({
-				conteudo_id: parseInt(id),
-				tipo,
-				classificacao,
-				critica: texto
-			})
-		});
+		const res = await fetch(`/${tipo}s/${id}/trailer`);
+		if (!res.ok) throw new Error('erro ao carregar trailer');
 
-		if (!res.ok) throw new Error('erro ao enviar review');
+		const data = await res.json();
+		if (!data.url) {
+			container.innerHTML = '<p>Trailer não disponível.</p>';
+			return;
+		}
 
-		document.getElementById('textoReview').value = '';
-		carregarReviews();
+		container.innerHTML = `
+            <h3>Trailer</h3>
+            <iframe width="560" height="315"
+                src="${data.url}"
+                title="Trailer" frameborder="0" allowfullscreen>
+            </iframe>
+        `;
 
 	} catch (err) {
 		console.error(err);
-		alert('erro ao enviar review.');
+		container.innerHTML = '<p>erro ao carregar trailer.</p>';
 	}
-});
 }
 
 // inicializar página
 document.addEventListener('DOMContentLoaded', () => {
 	carregarDetalhes();
+	carregarTrailer();
 });

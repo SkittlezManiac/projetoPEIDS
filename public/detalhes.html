@@ -11,7 +11,6 @@
 
 	<header>
 		<h1>Gestão de Filmes e Séries</h1>
-
 		<nav>
 			<a href="index.html">Home</a>
 			<a href="filmes.html">Filmes</a>
@@ -21,18 +20,24 @@
 		</nav>
 	</header>
 
+	<!-- Hero com trailer -->
 	<section class="hero">
-		<div class="hero-content">
-			<h2 id="titulo">Título</h2>
-			<p id="sinopse">Sinopse...</p>
-			<p class="info" id="infoBasica"></p>
-			<button id="btnFavorito">⭐ Adicionar aos Favoritos</button>
+		<div class="hero-container">
+			<div class="hero-content">
+				<h2 id="titulo">Título</h2>
+				<p id="sinopse">Sinopse...</p>
+				<p class="info" id="infoBasica"></p>
+				<button id="btnFavorito">⭐ Adicionar aos Favoritos</button>
+			</div>
+			<div class="hero-trailer" id="trailerContainer">
+				<!-- Trailer do YouTube será inserido dinamicamente -->
+				<p>Carregando trailer...</p>
+			</div>
 		</div>
 	</section>
 
 	<section class="section">
 		<h2>Informações</h2>
-
 		<div class="details-box">
 			<p><strong>Duração:</strong> <span id="duracao"></span></p>
 			<p><strong>Ano:</strong> <span id="ano"></span></p>
@@ -44,7 +49,6 @@
 
 	<section class="section">
 		<h2>Reviews</h2>
-
 		<div id="listaReviews"></div>
 
 		<h3>Adicionar Review</h3>
@@ -68,12 +72,12 @@
 		</p>
 	</footer>
 
-	<!--Login / Register Modal-->
+	<!-- Login / Register Modal -->
 	<div id="authModal" class="modal">
 		<div class="modal-content">
 			<span class="close" id="closeModal">&times;</span>
 
-			<!-- form do login -->
+			<!-- Formulário login -->
 			<form id="loginFormJS">
 				<h2>Bem-vindo!</h2>
 				<input type="email" placeholder="Email" id="loginemail" required>
@@ -82,7 +86,7 @@
 				<p>Ainda não tens conta? <span class="link" id="showRegister">Criar conta</span></p>
 			</form>
 
-			<!-- form do register -->
+			<!-- Formulário register -->
 			<form id="registerFormJS" style="display:none;">
 				<h2>Criar conta</h2>
 				<input type="text" placeholder="Nome" id="name" required>

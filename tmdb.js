@@ -47,7 +47,7 @@ async function getMovieDetails(id) {
 	try {
 		// requisitar detalhes do filme e cast
 		const response = await api.get(
-			`/movie/${id}?api_key=${API_KEY}&language=pt-PT&append_to_response=credits`
+			`/movie/${id}?api_key=${API_KEY}&language=pt-PT&append_to_response=credits,videos`
 		);
 		return response.data;
 	} catch (err) {
@@ -61,7 +61,7 @@ async function getMovieDetails(id) {
 async function getTVShowDetails(id) {
 	try {
 		// requisitar detalhes da serie
-		const response = await api.get(`/tv/${id}?api_key=${API_KEY}&language=pt-PT`);
+		const response = await api.get(`/tv/${id}?api_key=${API_KEY}&language=pt-PT&append_to_response=credits,videos`);
 		return response.data;
 	} catch (err) {
 		// log de erro e retornar null se falhar
@@ -94,13 +94,36 @@ async function getTVGenres() {
 	}
 }
 
-// exportar funcoes
+// obter vídeos de um filme
+async function getMovieVideos(id) {
+	try {
+		const response = await api.get(`/movie/${id}/videos?api_key=${API_KEY}&language=pt-PT`);
+		return response.data; // contém results[]
+	} catch (err) {
+		console.error("erro ao buscar vídeos do filme", id, err.response?.data || err.message);
+		return { results: [] };
+	}
+}
+
+// obter vídeos de uma série
+async function getTVVideos(id) {
+	try {
+		const response = await api.get(`/tv/${id}/videos?api_key=${API_KEY}&language=pt-PT`);
+		return response.data;
+	} catch (err) {
+		console.error("erro ao buscar vídeos da série", id, err.response?.data || err.message);
+		return { results: [] };
+	}
+}
+
 module.exports = {
 	getPopularMovies,
 	getPopularTVShows,
 	getMovieDetails,
 	getTVShowDetails,
 	getMovieGenres,
-	getTVGenres
+	getTVGenres,
+	getMovieVideos,
+	getTVVideos
 };
 

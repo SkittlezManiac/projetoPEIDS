@@ -1,5 +1,5 @@
 const db = require("../db/connection");
-const { getPopularTVShows, getTVShowDetails, getTVGenres } = require("../tmdb");
+const { getPopularTVShows, getTVShowDetails, getTVGenres, getTVVideos } = require("../tmdb");
 
 // 🔹 obter todas as séries
 exports.getAllSeries = (req, res) => {
@@ -72,6 +72,32 @@ exports.importarSeriesTmdb = async (req, res) => {
 	} catch (err) {
 		console.error("erro ao importar séries:", err);
 		res.status(500).json({ erro: "erro ao importar séries da tmdb" });
+	}
+};
+
+// obter trailer da série
+exports.getTrailerSerie = async (req, res) => {
+	const { id } = req.params;
+
+	if (!id) return res.status(400).json({ erro: "id da série é obrigatório." });
+
+	try {
+		const serie = await getTVShowDetails(id);
+		if (!serie) return res.status(404).json({ erro: "série não encontrada." });
+
+		// pegar vídeos do append_to_response ou fallback para getTVVideos
+		const videos = serie.videos?.results || [];
+
+		// procurar primeiro Trailer, depois Teaser
+		const trailer = videos.find(v => v.site === "YouTube" && (v.type === "Trailer" || v.type === "Teaser"));
+
+		if (!trailer) return res.json({ url: null });
+
+		res.json({ url: `https://www.youtube.com/embed/${trailer.key}` });
+
+	} catch (err) {
+		console.error("erro ao obter trailer da série:", err);
+		res.status(500).json({ erro: "erro ao obter trailer da série." });
 	}
 };
 

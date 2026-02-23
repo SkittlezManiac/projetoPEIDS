@@ -1,5 +1,5 @@
 const db = require("../db/connection");
-const { getPopularMovies, getMovieDetails, getMovieGenres } = require("../tmdb");
+const { getPopularMovies, getMovieDetails, getMovieGenres, getMovieVideos } = require("../tmdb");
 
 // 1️⃣ obter todos os filmes
 exports.getAllFilmes = (req, res) => {
@@ -105,6 +105,32 @@ exports.getDetalhesFilme = async (req, res) => {
 	} catch (err) {
 		console.error("erro ao obter detalhes do filme:", err);
 		res.status(500).json({ erro: "erro ao obter detalhes do filme." });
+	}
+};
+
+// obter trailer do filme
+exports.getTrailerFilme = async (req, res) => {
+	const { id } = req.params;
+
+	if (!id) return res.status(400).json({ erro: "id do filme é obrigatório." });
+
+	try {
+		const filme = await getMovieDetails(id);
+		if (!filme) return res.status(404).json({ erro: "filme não encontrado." });
+
+		// pegar vídeos do append_to_response ou fallback para getMovieVideos
+		const videos = filme.videos?.results || [];
+
+		// procurar primeiro Trailer, depois Teaser
+		const trailer = videos.find(v => v.site === "YouTube" && (v.type === "Trailer" || v.type === "Teaser"));
+
+		if (!trailer) return res.json({ url: null });
+
+		res.json({ url: `https://www.youtube.com/embed/${trailer.key}` });
+
+	} catch (err) {
+		console.error("erro ao obter trailer do filme:", err);
+		res.status(500).json({ erro: "erro ao obter trailer do filme." });
 	}
 };
 
