@@ -93,11 +93,11 @@ async function carregarReviews() {
 		}
 
 		reviews.forEach(r => {
-			const div = document.createElement('div'); F
+			const div = document.createElement('div');
 			div.className = 'review-card';
 
 			div.innerHTML = `
-	<p><strong>${r.nome_utilizador}</strong> - ${r.data_review}</p>
+	<p><strong>${r.nome_utilizador}</strong> - ${new Date(r.data_review).toLocaleDateString()}</p>
 	<p>classificação: ${r.classificacao} ⭐</p>
 	<p>${r.critica}</p>
 	<button class="btn-like" data-id="${r.id}">
@@ -134,42 +134,46 @@ async function votarUtilidade(idReview) {
 	}
 }
 
-// enviar review
 if (btnEnviarReview) {
-	btnEnviarReview.addEventListener('click', async () => {
+btnEnviarReview.addEventListener('click', async () => {
+	const texto = document.getElementById('textoReview').value.trim();
+	const classificacao = parseInt(document.getElementById('classificacao').value);
 
-		const texto = document.getElementById('textoReview').value;
-		const classificacao = document.getElementById('classificacao').value;
+	if (!texto) {
+		alert('escreve uma crítica.');
+		return;
+	}
 
-		if (!texto) {
-			alert('escreve uma crítica.');
-			return;
-		}
+	if (!token) {
+		alert('tens de fazer login para escrever uma review.');
+		return;
+	}
 
-		try {
-			const res = await fetch('/reviews', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({
-					idItem: id,
-					tipo,
-					critica: texto,
-					classificacao
-				})
-			});
+	try {
+		const res = await fetch('/reviews', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'Authorization': 'Bearer ' + token
+			},
+			body: JSON.stringify({
+				conteudo_id: parseInt(id),
+				tipo,
+				classificacao,
+				critica: texto
+			})
+		});
 
-			if (!res.ok) throw new Error('erro ao enviar review');
+		if (!res.ok) throw new Error('erro ao enviar review');
 
-			document.getElementById('textoReview').value = '';
-			carregarReviews();
+		document.getElementById('textoReview').value = '';
+		carregarReviews();
 
-		} catch (err) {
-			console.error(err);
-			alert('erro ao enviar review.');
-		}
-	});
+	} catch (err) {
+		console.error(err);
+		alert('erro ao enviar review.');
+	}
+});
 }
 
 // inicializar página

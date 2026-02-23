@@ -16,7 +16,6 @@
 			<a href="index.html">Home</a>
 			<a href="filmes.html">Filmes</a>
 			<a href="series.html">Séries</a>
-			<a href="reviews.html">Reviews</a>
 			<a href="favoritos.html">Favoritos</a>
 			<a href="#" id="btnLogin">Login</a>
 		</nav>
@@ -25,6 +24,9 @@
 	<main class="filmes-page">
 		<div class="search-bar">
 			<input type="text" id="searchInput" placeholder="Pesquisar filmes..." />
+			<select id="genreSelect">
+				<option value="">Todos os géneros</option>
+			</select>
 		</div>
 
 		<div id="filmesContainer" class="filmes-grid"></div>
@@ -43,26 +45,29 @@
 		</p>
 	</footer>
 
+	<!--Login / Register Modal-->
 	<div id="authModal" class="modal">
 		<div class="modal-content">
 			<span class="close" id="closeModal">&times;</span>
 
-			<div id="loginForm">
+			<!-- form do login -->
+			<form id="loginFormJS">
 				<h2>Bem-vindo!</h2>
-				<input type="email" placeholder="Email" id="loginemail">
-				<input type="password" placeholder="Password" id="loginpassword">
-				<button id="submitLogin">Login</button>
+				<input type="email" placeholder="Email" id="loginemail" required>
+				<input type="password" placeholder="Password" id="loginpassword" required>
+				<button type="submit" id="submitLogin">Login</button>
 				<p>Ainda não tens conta? <span class="link" id="showRegister">Criar conta</span></p>
-			</div>
+			</form>
 
-			<div id="registerForm" style="display:none;">
+			<!-- form do register -->
+			<form id="registerFormJS" style="display:none;">
 				<h2>Criar conta</h2>
-				<input type="text" placeholder="Nome" id="name">
-				<input type="email" placeholder="Email" id="email">
-				<input type="password" placeholder="Password" id="password">
-				<button id="submitRegister">Registar</button>
+				<input type="text" placeholder="Nome" id="name" required>
+				<input type="email" placeholder="Email" id="email" required>
+				<input type="password" placeholder="Password" id="password" required>
+				<button type="submit" id="submitRegister">Registar</button>
 				<p>Já tens conta? <span class="link" id="showLogin">Login</span></p>
-			</div>
+			</form>
 		</div>
 	</div>
 

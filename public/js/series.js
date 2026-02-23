@@ -1,25 +1,82 @@
 let series = [];
+let generosMap = {};
+let generoSelecionado = "todos";
 
-// carregar séries da api tmdb
+// carregar séries
 async function carregarSeries() {
 	try {
 		const resposta = await fetch("/series/tmdb/populares");
 		series = await resposta.json();
+
+		await carregarGeneros();
+		construirGeneros(series);
 		ordenarEExibir(series);
+
 	} catch (err) {
 		console.error("erro ao carregar séries:", err);
 	}
 }
 
-// ordenar séries por nome
+// carregar géneros da TMDB
+async function carregarGeneros() {
+	try {
+		const res = await fetch("/series/tmdb/generos");
+		const generos = await res.json();
+
+		generosMap = {};
+		generos.forEach(g => generosMap[g.id] = g.name);
+
+	} catch (err) {
+		console.error("erro ao carregar géneros:", err);
+	}
+}
+
+// construir select
+function construirGeneros(lista) {
+	const select = document.getElementById("genreSelect");
+	if (!select) return;
+
+	select.innerHTML = `<option value="todos">Todos</option>`;
+
+	const idsSeries = new Set();
+	lista.forEach(s => s.genre_ids?.forEach(id => idsSeries.add(id)));
+
+	idsSeries.forEach(id => {
+		const option = document.createElement("option");
+		option.value = id;
+		option.textContent = generosMap[id] || `Género ${id}`;
+		select.appendChild(option);
+	});
+
+	select.addEventListener("change", (e) => {
+		generoSelecionado = e.target.value;
+		filtrarEExibir();
+	});
+}
+
+// filtrar
+function filtrarEExibir() {
+	let listaFiltrada = [...series];
+
+	if (generoSelecionado !== "todos") {
+		listaFiltrada = listaFiltrada.filter(s =>
+			s.genre_ids?.includes(Number(generoSelecionado))
+		);
+	}
+
+	ordenarEExibir(listaFiltrada);
+}
+
+// ordenar
 function ordenarEExibir(lista) {
 	const ordenados = [...lista].sort((a, b) =>
 		a.name.localeCompare(b.name, "pt", { sensitivity: "base" })
 	);
+
 	renderizarSeries(ordenados);
 }
 
-// renderizar séries no html
+// renderizar
 function renderizarSeries(lista) {
 	const container = document.getElementById("seriesContainer");
 	container.innerHTML = "";
@@ -40,7 +97,6 @@ function renderizarSeries(lista) {
 			</div>
 		`;
 
-		// clique para detalhes da série
 		card.addEventListener("click", () => {
 			window.location.href = `detalhes.html?id=${serie.id}&tipo=serie`;
 		});
@@ -49,23 +105,21 @@ function renderizarSeries(lista) {
 	});
 }
 
-// pesquisa em tempo real
+// pesquisa
 document.getElementById("searchInput").addEventListener("input", (e) => {
 	const termo = e.target.value.toLowerCase().trim();
 
-	if (termo === "") {
-		ordenarEExibir(series);
-		return;
-	}
-
-	const filtrados = series.filter(s =>
+	let listaFiltrada = series.filter(s =>
 		s.name.toLowerCase().includes(termo)
 	);
 
-	ordenarEExibir(filtrados);
+	if (generoSelecionado !== "todos") {
+		listaFiltrada = listaFiltrada.filter(s =>
+			s.genre_ids?.includes(Number(generoSelecionado))
+		);
+	}
+
+	ordenarEExibir(listaFiltrada);
 });
 
-// inicializar ao carregar a página
-document.addEventListener("DOMContentLoaded", () => {
-	carregarSeries();
-});
+document.addEventListener("DOMContentLoaded", carregarSeries);

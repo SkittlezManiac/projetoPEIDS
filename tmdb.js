@@ -70,10 +70,37 @@ async function getTVShowDetails(id) {
 	}
 }
 
+async function getMovieGenres() {
+	try {
+		const response = await api.get(
+			`/genre/movie/list?api_key=${API_KEY}&language=pt-PT`
+		);
+		return response.data.genres;
+	} catch (err) {
+		console.error("erro ao buscar géneros", err.response?.data || err.message);
+		return [];
+	}
+}
+
+async function getTVGenres() {
+	try {
+		const response = await api.get(
+			`/genre/tv/list?api_key=${API_KEY}&language=pt-PT`
+		);
+		return response.data.genres;
+	} catch (err) {
+		console.error("erro ao buscar géneros de séries", err.response?.data || err.message);
+		return [];
+	}
+}
+
 // exportar funcoes
 module.exports = {
 	getPopularMovies,
 	getPopularTVShows,
 	getMovieDetails,
-	getTVShowDetails
+	getTVShowDetails,
+	getMovieGenres,
+	getTVGenres
 };
+
